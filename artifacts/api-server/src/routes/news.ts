@@ -1,5 +1,5 @@
 import { Router } from "express";
-import OpenAI from "openai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import {
   GetHeadlinesQueryParams,
   SummarizeArticleBody,
@@ -7,9 +7,7 @@ import {
 
 const router = Router();
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY ?? "");
 
 router.get("/news/headlines", async (req, res) => {
   const parsed = GetHeadlinesQueryParams.safeParse(req.query);
@@ -59,6 +57,12 @@ router.post("/news/summarize", async (req, res) => {
     return;
   }
 
+  const geminiKey = process.env.GEMINI_API_KEY;
+  if (!geminiKey) {
+    res.status(500).json({ error: "GEMINI_API_KEY is not configured" });
+    return;
+  }
+
   const { title, description, content, url } = parsed.data;
 
   const articleText = [
@@ -71,27 +75,19 @@ router.post("/news/summarize", async (req, res) => {
     .join("\n\n");
 
   try {
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
-      max_completion_tokens: 300,
-      messages: [
-        {
-          role: "system",
-          content:
-            "You are a concise news summarizer. Summarize the article in 2-4 clear, informative sentences. Focus on the key facts and avoid filler phrases.",
-        },
-        {
-          role: "user",
-          content: `Please summarize this news article:\n\n${articleText}`,
-        },
-      ],
+    const model = genAI.getGenerativeModel({
+      model: "gemini-1.5-flash",
+      systemInstruction:
+        "You are a concise news summarizer. Summarize the article in 2-4 clear, informative sentences. Focus on the key facts and avoid filler phrases.",
     });
 
-    const summary =
-      completion.choices[0]?.message?.content ?? "Summary unavailable.";
+    const result = await model.generateContent(
+      `Please summarize this news article:\n\n${articleText}`
+    );
+    const summary = result.response.text() || "Summary unavailable.";
     res.json({ summary });
   } catch (err) {
-    req.log.error({ err }, "OpenAI summarize failed");
+    req.log.error({ err }, "Gemini summarize failed");
     res.status(500).json({ error: "Failed to generate summary" });
   }
 });
