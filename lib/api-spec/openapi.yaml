@@ -10,6 +10,8 @@ servers:
 tags:
   - name: health
     description: Health operations
+  - name: news
+    description: News operations
 paths:
   /healthz:
     get:
@@ -24,6 +26,87 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /news/headlines:
+    get:
+      operationId: getHeadlines
+      tags: [news]
+      summary: Get top headlines
+      description: Fetch top headlines from NewsAPI with optional filters
+      parameters:
+        - name: category
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [business, entertainment, general, health, science, sports, technology]
+        - name: q
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: country
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of headlines
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HeadlinesResponse"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /news/summarize:
+    post:
+      operationId: summarizeArticle
+      tags: [news]
+      summary: Summarize a news article
+      description: Use OpenAI to generate a concise summary of a news article
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ArticleSummarizeInput"
+      responses:
+        "200":
+          description: Summary generated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SummaryResponse"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +117,85 @@ components:
       required:
         - status
 
+    NewsSource:
+      type: object
+      properties:
+        id:
+          type: ["string", "null"]
+        name:
+          type: string
+      required:
+        - id
+        - name
+
+    NewsArticle:
+      type: object
+      properties:
+        source:
+          $ref: "#/components/schemas/NewsSource"
+        author:
+          type: ["string", "null"]
+        title:
+          type: string
+        description:
+          type: ["string", "null"]
+        url:
+          type: string
+        urlToImage:
+          type: ["string", "null"]
+        publishedAt:
+          type: string
+        content:
+          type: ["string", "null"]
+      required:
+        - source
+        - title
+        - url
+        - publishedAt
+
+    HeadlinesResponse:
+      type: object
+      properties:
+        status:
+          type: string
+        totalResults:
+          type: integer
+        articles:
+          type: array
+          items:
+            $ref: "#/components/schemas/NewsArticle"
+      required:
+        - status
+        - totalResults
+        - articles
+
+    ArticleSummarizeInput:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: ["string", "null"]
+        content:
+          type: ["string", "null"]
+        url:
+          type: string
+      required:
+        - title
+        - url
+
+    SummaryResponse:
+      type: object
+      properties:
+        summary:
+          type: string
+      required:
+        - summary
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
