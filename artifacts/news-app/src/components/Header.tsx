@@ -105,22 +105,28 @@ export function Header({
             )}
           </div>
 
-          {/* Category chips — horizontal scroll on mobile */}
-          <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5 sm:pb-0 scrollbar-none flex-shrink-0">
-            {CATEGORIES.map((cat) => (
-              <button
-                key={cat.value}
-                data-testid={`chip-category-${cat.value}`}
-                onClick={() => onCategoryChange(cat.value)}
-                className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 whitespace-nowrap
-                  ${activeCategory === cat.value
-                    ? 'bg-primary text-primary-foreground shadow-sm'
-                    : 'bg-card text-muted-foreground border border-input hover:border-primary/40 hover:text-foreground hover:bg-accent'
-                  }`}
-              >
-                {cat.label}
-              </button>
-            ))}
+          {/* Category chips — horizontal scroll on mobile with fade hint */}
+          <div className="relative w-full sm:w-auto flex-shrink-0">
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
+              {CATEGORIES.map((cat) => (
+                <button
+                  key={cat.value}
+                  data-testid={`chip-category-${cat.value}`}
+                  onClick={() => onCategoryChange(cat.value)}
+                  className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 whitespace-nowrap
+                    ${activeCategory === cat.value
+                      ? 'bg-primary text-primary-foreground shadow-sm'
+                      : 'bg-card text-muted-foreground border border-input hover:border-primary/40 hover:text-foreground hover:bg-accent'
+                    }`}
+                >
+                  {cat.label}
+                </button>
+              ))}
+              {/* Spacer so last chip isn't flush against fade */}
+              <div className="flex-shrink-0 w-6 sm:hidden" />
+            </div>
+            {/* Right-edge fade to signal scrollability — use actual background color */}
+            <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-10 sm:hidden" style={{ background: 'linear-gradient(to left, hsl(40 28% 95%), transparent)' }} />
           </div>
         </div>
 

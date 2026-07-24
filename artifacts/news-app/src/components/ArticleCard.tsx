@@ -101,7 +101,7 @@ export function ArticleCard({ article, index }: ArticleCardProps) {
         data-testid={`article-image-link-${index}`}
         className="block overflow-hidden flex-shrink-0"
       >
-        <div className="relative h-48 overflow-hidden">
+        <div className="relative h-36 sm:h-48 overflow-hidden">
           <ImageWithFallback
             src={article.urlToImage}
             alt={article.title}
@@ -113,7 +113,7 @@ export function ArticleCard({ article, index }: ArticleCardProps) {
       </a>
 
       {/* Content */}
-      <div className="flex flex-col flex-1 p-5">
+      <div className="flex flex-col flex-1 p-4 sm:p-5">
         {/* Source + Time row */}
         <div className="flex items-center justify-between mb-3">
           <CategoryDot source={article.source.name || 'News'} />
@@ -144,7 +144,7 @@ export function ArticleCard({ article, index }: ArticleCardProps) {
         )}
 
         {/* Actions row */}
-        <div className="flex items-center justify-between mt-auto pt-3 border-t border-card-border">
+        <div className="flex flex-wrap items-center justify-between gap-2 mt-auto pt-3 border-t border-card-border">
           <a
             href={article.url}
             target="_blank"
