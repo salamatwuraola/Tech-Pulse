@@ -32,6 +32,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use("/api", router);
+app.use("/", router);
 
 const staticPaths = [
   path.resolve(process.cwd(), "artifacts/news-app/dist"),
