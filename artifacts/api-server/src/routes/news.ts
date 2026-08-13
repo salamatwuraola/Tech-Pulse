@@ -85,7 +85,7 @@ router.get("/news/headlines", async (req, res) => {
         `https://newsapi.org/v2/top-headlines?${params.toString()}`
       );
       if (response.ok) {
-        const data = await response.json();
+        const data = (await response.json()) as any;
         if (data && data.articles && data.articles.length > 0) {
           res.json(data);
           return;
