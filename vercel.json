@@ -1,7 +1,8 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "vite",
   "buildCommand": "pnpm run build",
-  "outputDirectory": "artifacts/news-app/dist/public",
+  "outputDirectory": "artifacts/news-app/dist",
   "rewrites": [
     {
       "source": "/api/(.*)",

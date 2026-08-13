@@ -34,7 +34,9 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/api", router);
 
 const staticPaths = [
+  path.resolve(process.cwd(), "artifacts/news-app/dist"),
   path.resolve(process.cwd(), "artifacts/news-app/dist/public"),
+  path.resolve(import.meta.dirname ?? "", "../../news-app/dist"),
   path.resolve(import.meta.dirname ?? "", "../../news-app/dist/public"),
 ];
 
