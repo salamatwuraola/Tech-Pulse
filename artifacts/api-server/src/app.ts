@@ -34,7 +34,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/api", router);
 app.use("/", router);
 
-app.get("/", (_req, res) => {
+app.get("/api", (_req, res) => {
   res.json({ status: "ok", service: "News Summarizer API" });
 });
 
