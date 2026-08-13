@@ -1,7 +1,8 @@
 {
   "version": 2,
+  "framework": "vite",
   "buildCommand": "pnpm run build",
-  "outputDirectory": "artifacts/news-app/dist",
+  "outputDirectory": "dist",
   "rewrites": [
     {
       "source": "/api/(.*)",
