@@ -34,6 +34,10 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/api", router);
 app.use("/", router);
 
+app.get("/", (_req, res) => {
+  res.json({ status: "ok", service: "News Summarizer API" });
+});
+
 const staticPaths = [
   path.resolve(process.cwd(), "artifacts/news-app/dist"),
   path.resolve(process.cwd(), "artifacts/news-app/dist/public"),
