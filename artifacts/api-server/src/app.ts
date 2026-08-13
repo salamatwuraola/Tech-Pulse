@@ -32,34 +32,37 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use("/api", router);
-app.use("/", router);
 
 app.get("/api", (_req, res) => {
   res.json({ status: "ok", service: "News Summarizer API" });
 });
 
 const staticPaths = [
+  path.resolve(import.meta.dirname ?? "", "../dist"),
+  path.resolve(process.cwd(), "dist"),
   path.resolve(process.cwd(), "artifacts/news-app/dist"),
   path.resolve(process.cwd(), "artifacts/news-app/dist/public"),
   path.resolve(import.meta.dirname ?? "", "../../news-app/dist"),
   path.resolve(import.meta.dirname ?? "", "../../news-app/dist/public"),
+  path.resolve(import.meta.dirname ?? "", "../../../dist"),
 ];
 
 for (const staticPath of staticPaths) {
   if (fs.existsSync(staticPath)) {
     app.use(express.static(staticPath));
-    // Express v5 compatible catch-all: use a regex route instead of "*"
-    app.use((req, res, next) => {
-      if (req.path.startsWith("/api")) return next();
-      const indexFile = path.join(staticPath, "index.html");
-      if (fs.existsSync(indexFile)) {
-        res.sendFile(indexFile);
-      } else {
-        next();
-      }
-    });
-    break;
   }
 }
+
+// Fallback handler for SPA client routes
+app.use((req, res, next) => {
+  if (req.path.startsWith("/api")) return next();
+  for (const staticPath of staticPaths) {
+    const indexFile = path.join(staticPath, "index.html");
+    if (fs.existsSync(indexFile)) {
+      return res.sendFile(indexFile);
+    }
+  }
+  next();
+});
 
 export default app;

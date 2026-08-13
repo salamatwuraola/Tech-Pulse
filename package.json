@@ -7,7 +7,7 @@
     "dev:api": "pnpm --filter @workspace/api-server run dev",
     "dev:app": "pnpm --filter @workspace/news-app run dev",
     "start": "pnpm --filter @workspace/api-server run start",
-    "build": "pnpm run typecheck && pnpm -r --if-present run build && node -e \"require('node:fs').cpSync('artifacts/news-app/dist', 'dist', {recursive: true})\"",
+    "build": "pnpm run typecheck && pnpm -r --if-present run build && node -e \"require('node:fs').cpSync('artifacts/news-app/dist', 'dist', {recursive: true}); require('node:fs').cpSync('artifacts/news-app/dist', 'artifacts/api-server/dist', {recursive: true})\"",
     "typecheck:libs": "tsc --build",
     "typecheck": "pnpm run typecheck:libs && pnpm -r --filter \"./artifacts/**\" --filter \"./scripts\" --if-present run typecheck"
   },
