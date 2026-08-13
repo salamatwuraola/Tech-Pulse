@@ -45,10 +45,10 @@ export function Header({
           <div className="flex items-center gap-4">
             <div>
               <h1 className="font-serif-display font-black text-xl sm:text-2xl tracking-tight text-foreground leading-none">
-                AI News Digest
+                Tech Pulse
               </h1>
               <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground mt-0.5 font-medium">
-                Curated by machine. Understood in seconds.
+                Understanding News in seconds.
               </p>
             </div>
           </div>
@@ -65,7 +65,7 @@ export function Header({
             <div className="w-px h-10 bg-border" />
             <div className="flex flex-col items-center">
               <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
-                <span className="font-serif-display font-bold text-primary-foreground text-sm">A</span>
+                <span className="font-serif-display font-bold text-primary-foreground text-sm">T</span>
               </div>
             </div>
           </div>

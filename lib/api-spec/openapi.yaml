@@ -80,7 +80,7 @@ paths:
       operationId: summarizeArticle
       tags: [news]
       summary: Summarize a news article
-      description: Use OpenAI to generate a concise summary of a news article
+      description: Use Gemini AI to generate a concise summary of a news article
       requestBody:
         required: true
         content:

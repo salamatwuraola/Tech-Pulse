@@ -227,7 +227,7 @@ export const getSummarizeArticleUrl = () => {
 }
 
 /**
- * Use OpenAI to generate a concise summary of a news article
+ * Use Gemini AI to generate a concise summary of a news article
  * @summary Summarize a news article
  */
 export const summarizeArticle = async (articleSummarizeInput: ArticleSummarizeInput, options?: RequestInit): Promise<SummaryResponse> => {

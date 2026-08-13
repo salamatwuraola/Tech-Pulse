@@ -48,7 +48,7 @@ export const GetHeadlinesResponse = zod.object({
 
 
 /**
- * Use OpenAI to generate a concise summary of a news article
+ * Use Gemini AI to generate a concise summary of a news article
  * @summary Summarize a news article
  */
 export const SummarizeArticleBody = zod.object({

@@ -1,6 +1,8 @@
 import express, { type Express } from "express";
 import cors from "cors";
 import pinoHttp from "pino-http";
+import path from "node:path";
+import fs from "node:fs";
 import router from "./routes";
 import { logger } from "./lib/logger";
 
@@ -30,5 +32,27 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use("/api", router);
+
+const staticPaths = [
+  path.resolve(process.cwd(), "artifacts/news-app/dist/public"),
+  path.resolve(import.meta.dirname ?? "", "../../news-app/dist/public"),
+];
+
+for (const staticPath of staticPaths) {
+  if (fs.existsSync(staticPath)) {
+    app.use(express.static(staticPath));
+    // Express v5 compatible catch-all: use a regex route instead of "*"
+    app.use((req, res, next) => {
+      if (req.path.startsWith("/api")) return next();
+      const indexFile = path.join(staticPath, "index.html");
+      if (fs.existsSync(indexFile)) {
+        res.sendFile(indexFile);
+      } else {
+        next();
+      }
+    });
+    break;
+  }
+}
 
 export default app;
