@@ -61,57 +61,64 @@ function fallbackSummary(title: string, description?: string | null, content?: s
   return result || `${title}. Key highlights available at the source article.`;
 }
 
-router.get("/news/headlines", async (req, res) => {
-  const parsed = GetHeadlinesQueryParams.safeParse(req.query);
-  if (!parsed.success) {
-    res.status(400).json({ error: "Invalid query parameters" });
-    return;
-  }
-
-  const { category, q, country = "us", pageSize = 20 } = parsed.data;
-  const apiKey = process.env.NEWS_API_KEY;
-
-  if (apiKey) {
-    const params = new URLSearchParams({
-      country,
-      pageSize: String(pageSize),
-      apiKey,
-    });
-    if (category) params.set("category", category);
-    if (q) params.set("q", q);
-
-    try {
-      const response = await fetch(
-        `https://newsapi.org/v2/top-headlines?${params.toString()}`
-      );
-      if (response.ok) {
-        const data = (await response.json()) as any;
-        if (data && data.articles && data.articles.length > 0) {
-          res.json(data);
-          return;
-        }
-      }
-    } catch (err) {
-      req.log.warn({ err }, "NewsAPI fetch failed, utilizing fallback dataset");
+router.get(
+  ["/news/headlines", "/headlines", "/api/news/headlines", "/api/headlines"],
+  async (req, res) => {
+    const parsed = GetHeadlinesQueryParams.safeParse(req.query);
+    if (!parsed.success) {
+      res.status(400).json({ error: "Invalid query parameters" });
+      return;
     }
-  }
 
-  // Graceful fallback if NewsAPI fails or has network lookup issues
-  let articles = FALLBACK_ARTICLES;
-  if (q) {
-    const queryLower = q.toLowerCase();
-    articles = articles.filter(
-      a => a.title.toLowerCase().includes(queryLower) || a.description.toLowerCase().includes(queryLower)
-    );
-  }
-  res.json({
-    status: "ok",
-    totalResults: articles.length,
-    articles,
-  });
-});
+    const { category, q, country = "us", pageSize = 20 } = parsed.data;
+    const apiKey = process.env.NEWS_API_KEY;
 
-router.post("/news/summarize", async (req, res) => {
+    if (apiKey) {
+      const params = new URLSearchParams({
+        country,
+        pageSize: String(pageSize),
+        apiKey,
+      });
+      if (category) params.set("category", category);
+      if (q) params.set("q", q);
+
+      try {
+        const response = await fetch(
+          `https://newsapi.org/v2/top-headlines?${params.toString()}`
+        );
+        if (response.ok) {
+          const data = (await response.json()) as any;
+          if (data && data.articles && data.articles.length > 0) {
+            res.json(data);
+            return;
+          }
+        } else {
+          req.log.warn({ status: response.status }, "NewsAPI fetch returned non-ok status, utilizing fallback dataset");
+        }
+      } catch (err) {
+        req.log.warn({ err }, "NewsAPI fetch failed, utilizing fallback dataset");
+      }
+    }
+
+    // Graceful fallback if NewsAPI fails or has network lookup issues
+    let articles = FALLBACK_ARTICLES;
+    if (q) {
+      const queryLower = q.toLowerCase();
+      articles = articles.filter(
+        a => a.title.toLowerCase().includes(queryLower) || a.description.toLowerCase().includes(queryLower)
+      );
+    }
+    res.json({
+      status: "ok",
+      totalResults: articles.length,
+      articles,
+    });
+  }
+);
+
+router.post(
+  ["/news/summarize", "/summarize", "/api/news/summarize", "/api/summarize"],
+  async (req, res) => {
   const parsed = SummarizeArticleBody.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ error: "Invalid request body" });
